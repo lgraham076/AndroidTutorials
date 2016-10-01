@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 public class QuizActivity extends AppCompatActivity {
     private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX= "index";
 
     private Button mTrueButton;
     private Button mFalseButton;
@@ -50,6 +51,10 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
+
+        if(savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+        }
 
         mTextView = (TextView) findViewById(R.id.question_text_view);
         mTextView.setOnClickListener(new View.OnClickListener() {
@@ -126,5 +131,12 @@ public class QuizActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG,"onDestroy() Called");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.d(TAG, "onSaveInstanceState() Called");
+        savedInstanceState.putInt(KEY_INDEX,mCurrentIndex);
     }
 }
