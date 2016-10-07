@@ -34,18 +34,26 @@ public class QuizActivity extends AppCompatActivity {
     private int mCurrentIndex=0;
     private boolean mIsACheater;
 
+    /**
+     *  Sets the text view to the current question
+     */
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mTextView.setText(question);
     }
 
+    /**
+     * Checks if the user answer was correct and outputs the result as a toast
+     *
+     * @param userPressedTrue The true or false response to the question
+     */
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId;
 
-        if(mIsACheater) {
+        if(mIsACheater) { //Notify user if they cheated
             messageResId = R.string.judgement_toast;
-        } else {
+        } else { //Check if user chose the correct answer
             if(userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
             } else {
@@ -53,9 +61,17 @@ public class QuizActivity extends AppCompatActivity {
             }
         }
 
+        //Create response for user
         Toast.makeText(QuizActivity.this,messageResId,Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Gets result from child process
+     *
+     * @param requestCode Unique identifier for child process
+     * @param resultCode Returns whether user submitted or cancelled
+     * @param data The result from the child process
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode != Activity.RESULT_OK) {
@@ -66,21 +82,27 @@ public class QuizActivity extends AppCompatActivity {
             if(data==null) {
                 return;
             }
-
+            //Determine if user is cheater
             mIsACheater = CheatActivity.wasAnswerShown(data);
         }
     }
 
+    /**
+     * Used to initialize QuizActivity
+     * @param savedInstanceState Saved state from previous application run
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
 
+        //Check for saved instance from previous run holding the question number
         if(savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
         }
 
+        //Text view for question
         mTextView = (TextView) findViewById(R.id.question_text_view);
         mTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +113,7 @@ public class QuizActivity extends AppCompatActivity {
         });
         updateQuestion();
 
+        //True and false buttons
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +129,7 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        //Previous Button
         mPrevButton = (ImageButton) findViewById(R.id.prev_button);
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +143,7 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        //Next Button
         mNextButton = (ImageButton) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,6 +154,7 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        //Cheat Button
         mCheatButton = (Button) findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,40 +166,15 @@ public class QuizActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG,"onStart() Called");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG,"onPause() Called");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG,"onResume() Called");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG,"onStop() Called");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG,"onDestroy() Called");
-    }
-
+    /**
+     * Used to preserve state upon configuration changes
+     * @param savedInstanceState The current state
+     */
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         Log.d(TAG, "onSaveInstanceState() Called");
+        //Preserve index for current question
         savedInstanceState.putInt(KEY_INDEX,mCurrentIndex);
     }
 }
